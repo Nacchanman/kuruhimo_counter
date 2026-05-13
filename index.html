@@ -3,63 +3,65 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#f4ead9" />
-    <title>くるひもタイムズ ピクセル訪問カウンター</title>
+    <meta name="theme-color" content="#df5a2f" />
+    <title>くるひもタイムズ ピクセルカウンター</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Press+Start+2P&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="pixel-device" aria-label="iPhone SE 横向きのくるひもタイムズ訪問者カウンター">
-      <section class="pixel-screen">
-        <div class="paper-noise" aria-hidden="true"></div>
-        <div class="pixel-sunset" aria-hidden="true">
-          <span class="sun-core"></span>
-          <span class="horizon horizon-a"></span>
-          <span class="horizon horizon-b"></span>
-          <span class="horizon horizon-c"></span>
-          <span class="bird bird-a"></span>
-          <span class="bird bird-b"></span>
-          <span class="bird bird-c"></span>
-          <span class="caption-line">SUNSET EDITORIAL ROOM</span>
-        </div>
+    <main class="se-stage" aria-label="iPhone SE 横向き専用のくるひもタイムズ訪問回数カウンター">
+      <section class="pixel-paper">
+        <div class="pixel-grain" aria-hidden="true"></div>
 
-        <header class="pixel-rail" aria-hidden="true">
-          <span class="vol-badge">VOL013</span>
-          <span class="rail-date">2026.05.13 水</span>
-          <span class="rail-weather">晴れ・知的好奇心</span>
-          <span class="rail-est">EST.2026</span>
+        <header class="top-strip" aria-hidden="true">
+          <span class="chip">VOL013</span>
+          <span>2026.05.13 水</span>
+          <span>晴れ・知的好奇心</span>
+          <span>EST.2026</span>
         </header>
 
-        <section class="counter-card" aria-live="polite">
-          <p class="pixel-kicker">THE KURUHIMO TIMES</p>
-          <h1 class="pixel-title" aria-label="くるひもタイムズ">
-            <span>く</span><span>る</span><span>ひ</span><span>も</span><span>タ</span><span>イ</span><span>ム</span><span>ズ</span>
-          </h1>
-          <p class="pixel-subtitle">ARTICLE VIEW COUNTER</p>
+        <div class="sunset-scene" aria-hidden="true">
+          <span class="pixel-sun"></span>
+          <span class="sun-block b1"></span>
+          <span class="sun-block b2"></span>
+          <span class="sun-block b3"></span>
+          <span class="sun-block b4"></span>
+          <span class="line l1"></span>
+          <span class="line l2"></span>
+          <span class="line l3"></span>
+          <span class="line l4"></span>
+          <span class="pixel-bird bird-1"></span>
+          <span class="pixel-bird bird-2"></span>
+          <span class="room-label">SUNSET EDITORIAL ROOM</span>
+        </div>
 
-          <div class="counter-display" role="status" aria-label="訪問回数">
+        <section class="counter-area" aria-live="polite">
+          <p class="kicker">THE KURUHIMO TIMES</p>
+          <h1 class="main-title">くるひもタイムズ</h1>
+          <p class="sub-title">PIXEL ARTICLE VIEW COUNTER</p>
+
+          <div class="count-box" role="status" aria-label="訪問回数">
             <span id="visitor-count">------</span>
-            <small>VIEWS</small>
+            <span class="count-label">VIEWS</span>
           </div>
 
-          <div class="pixel-editorial-room" aria-hidden="true">
-            <span class="pixel-character editor">
-              <span class="head"></span><span class="body"></span><span class="legs"></span>
-            </span>
-            <span class="pixel-desk">
-              <span class="lamp"></span><span class="paper-stack"></span><span class="typewriter"></span>
-            </span>
-            <span class="pixel-character reporter">
-              <span class="head"></span><span class="body"></span><span class="legs"></span>
-            </span>
+          <div class="orange-town" aria-hidden="true">
+            <span class="mini-editor editor-a"></span>
+            <span class="pixel-desk"></span>
+            <span class="mini-editor editor-b"></span>
+            <span class="pixel-tower"></span>
+            <span class="pixel-paperboy"></span>
           </div>
 
           <p id="counter-note" class="note">カウンターを読み込み中...</p>
         </section>
 
-        <footer class="screen-footer">
-          <span>PIXEL DAILY EDITION</span>
-          <span class="blink">█</span>
-          <span>5 MIN AUTO REFRESH</span>
+        <footer class="bottom-strip">
+          <span>ORANGE PIXEL DAILY</span>
+          <span class="blink">■</span>
+          <span>5MIN AUTO REFRESH</span>
         </footer>
       </section>
     </main>
