@@ -8,7 +8,7 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <title>くるひもタイムズ ゲームボーイ風カウンター</title>
-    <link rel="stylesheet" href="./styles.css?v=gameboy-inline-1" />
+    <link rel="stylesheet" href="./styles.css?v=counter-first-1" />
   </head>
   <body>
     <main class="gameboy-frame" aria-label="iPhone SE 横向き専用のくるひもタイムズ訪問回数カウンター">
@@ -23,38 +23,17 @@
         const ctx = canvas.getContext('2d');
         const W = 334;
         const H = 188;
-        const API_URLS = [
-          'https://kuruhimo.com/api/article-counter',
-          'https://kuruhitimes.pages.dev/api/article-counter'
-        ];
-        const DATA_URLS = [
-          'https://kuruhimo.com/data.json',
-          'https://kuruhitimes.pages.dev/data.json',
-          'https://raw.githubusercontent.com/Nacchanman/kuruhitimes/main/data.json'
-        ];
+        const API_URLS = ['https://kuruhimo.com/api/article-counter', 'https://kuruhitimes.pages.dev/api/article-counter'];
+        const DATA_URLS = ['https://kuruhimo.com/data.json', 'https://kuruhitimes.pages.dev/data.json', 'https://raw.githubusercontent.com/Nacchanman/kuruhitimes/main/data.json'];
         const FALLBACK_IDS = ['idea-5', 'idea-4', 'idea-3', 'idea-2', 'idea-1'];
         const REFRESH_MS = 5 * 60 * 1000;
-        const C = {
-          black: '#1b1008',
-          brown: '#542713',
-          darkOrange: '#8f3515',
-          orange: '#d85a22',
-          mid: '#ef8b3b',
-          light: '#ffba5c',
-          paper: '#ffe0a0',
-          pale: '#fff0bf'
-        };
+        const C = { black:'#1b1008', brown:'#542713', dark:'#8f3515', orange:'#d85a22', mid:'#ef8b3b', light:'#ffba5c', paper:'#ffe0a0', pale:'#fff0bf' };
         const D = {
-          '0':['111','101','101','101','101','101','111'],
-          '1':['010','110','010','010','010','010','111'],
-          '2':['111','001','001','111','100','100','111'],
-          '3':['111','001','001','111','001','001','111'],
-          '4':['101','101','101','111','001','001','001'],
-          '5':['111','100','100','111','001','001','111'],
-          '6':['111','100','100','111','101','101','111'],
-          '7':['111','001','001','010','010','010','010'],
-          '8':['111','101','101','111','101','101','111'],
-          '9':['111','101','101','111','001','001','111'],
+          '0':['111','101','101','101','101','101','111'], '1':['010','110','010','010','010','010','111'],
+          '2':['111','001','001','111','100','100','111'], '3':['111','001','001','111','001','001','111'],
+          '4':['101','101','101','111','001','001','001'], '5':['111','100','100','111','001','001','111'],
+          '6':['111','100','100','111','101','101','111'], '7':['111','001','001','010','010','010','010'],
+          '8':['111','101','101','111','101','101','111'], '9':['111','101','101','111','001','001','111'],
           '-':['000','000','000','111','000','000','000']
         };
         let total = 0;
@@ -63,165 +42,87 @@
         let updated = '--:--';
         let blink = true;
         let cachedIds = [];
-
         ctx.imageSmoothingEnabled = false;
 
-        function r(x, y, w, h, color) {
-          ctx.fillStyle = color;
-          ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
-        }
-
-        function t(str, x, y, size, color, align = 'left', font = 'monospace') {
-          ctx.fillStyle = color;
-          ctx.textAlign = align;
-          ctx.textBaseline = 'top';
-          ctx.font = `${size}px ${font}`;
-          ctx.fillText(str, Math.round(x), Math.round(y));
-        }
-
-        function digit(ch, x, y, s, color) {
-          const rows = D[ch] || D['-'];
-          rows.forEach((row, yy) => {
-            [...row].forEach((v, xx) => {
-              if (v === '1') r(x + xx * s, y + yy * s, s, s, color);
-            });
-          });
-        }
-
-        function number(n, x, y, s, color) {
-          String(Math.max(0, Number(n) || 0)).padStart(6, '0').split('').forEach((ch, i) => {
-            digit(ch, x + i * s * 4, y, s, color);
-          });
-        }
-
-        function bird(x, y) {
-          r(x, y + 2, 4, 2, C.brown);
-          r(x + 4, y, 3, 2, C.brown);
-          r(x + 7, y + 2, 4, 2, C.brown);
-        }
+        function r(x, y, w, h, color) { ctx.fillStyle = color; ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
+        function t(str, x, y, size, color, align = 'left', font = 'monospace') { ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = 'top'; ctx.font = `${size}px ${font}`; ctx.fillText(str, Math.round(x), Math.round(y)); }
+        function digit(ch, x, y, s, color) { (D[ch] || D['-']).forEach((row, yy) => [...row].forEach((v, xx) => { if (v === '1') r(x + xx * s, y + yy * s, s, s, color); })); }
+        function number(n, x, y, s, color) { String(Math.max(0, Number(n) || 0)).padStart(6, '0').split('').forEach((ch, i) => digit(ch, x + i * s * 4, y, s, color)); }
+        function bird(x, y) { r(x, y + 2, 4, 2, C.brown); r(x + 4, y, 3, 2, C.brown); r(x + 7, y + 2, 4, 2, C.brown); }
 
         function draw() {
           ctx.clearRect(0, 0, W, H);
-          r(0, 0, W, H, C.paper);
-
-          // Game Boy coarse screen background
-          r(0, 0, W, 63, C.mid);
-          r(0, 63, W, 8, C.light);
-          r(0, 71, W, 117, C.pale);
-
+          r(0, 0, W, H, C.pale);
+          r(0, 0, W, 48, C.mid);
+          r(0, 48, W, 8, C.light);
           for (let y = 0; y < H; y += 8) r(0, y, W, 1, 'rgba(84,39,19,0.14)');
           for (let x = 0; x < W; x += 8) r(x, 0, 1, H, 'rgba(84,39,19,0.08)');
 
-          // sunset made of large pixels
-          r(129, 0, 76, 8, C.light);
-          r(116, 8, 102, 8, '#ffa84a');
-          r(107, 16, 120, 8, C.mid);
-          r(99, 24, 136, 10, C.orange);
-          r(94, 34, 146, 12, '#bd4217');
-          r(104, 46, 126, 7, '#943312');
-          r(0, 44, W, 2, C.brown);
-          r(0, 52, W, 1, C.orange);
-          r(0, 60, W, 1, C.darkOrange);
-          bird(92, 17); bird(244, 13); bird(264, 10);
-          t('SUNSET EDITORIAL ROOM', W / 2, 51, 6, C.brown, 'center');
+          // compact sunset header
+          r(130, 0, 74, 7, C.light); r(116, 7, 102, 7, '#ffa84a'); r(104, 14, 126, 8, C.mid); r(96, 22, 142, 9, C.orange); r(106, 31, 122, 6, C.dark);
+          r(0, 35, W, 2, C.brown); r(0, 43, W, 1, C.orange); bird(92, 14); bird(244, 10); bird(262, 8);
+          t('KURUHIMO TIMES  /  ARTICLE VIEW COUNTER', W / 2, 39, 6, C.brown, 'center');
 
-          // header
-          r(0, 76, W, 2, C.brown);
-          r(0, 96, W, 2, C.brown);
-          r(5, 81, 35, 11, C.black);
-          t('VOL013', 8, 83, 6, C.pale);
-          t('2026.05.13', 70, 83, 7, C.brown);
-          t('HARE', 178, 83, 7, C.brown);
-          t('EST.2026', 270, 83, 7, C.brown);
+          // top strip
+          r(0, 56, W, 2, C.brown); r(0, 73, W, 2, C.brown);
+          r(5, 60, 35, 10, C.black); t('VOL013', 8, 62, 6, C.pale);
+          t('TOTAL ARTICLE VIEWS', 55, 61, 8, C.brown);
+          t(updated, 290, 61, 8, C.brown);
 
-          // title and labels: drawn into low-res canvas, then scaled by CSS
-          t('THE KURUHIMO TIMES', 14, 107, 9, C.brown);
-          t('くるひもタイムズ', W / 2 + 2, 125 + 2, 24, C.light, 'center', 'sans-serif');
-          t('くるひもタイムズ', W / 2 + 1, 125 + 1, 24, C.orange, 'center', 'sans-serif');
-          t('くるひもタイムズ', W / 2, 125, 24, C.black, 'center', 'sans-serif');
-          r(30, 130, 5, 5, C.black); r(54, 148, 5, 5, C.black); r(274, 127, 5, 5, C.black);
-          t('ARTICLE VIEW COUNTER', 14, 158, 8, C.brown);
+          // main counter: the most prominent element
+          r(10, 82, 314, 72, C.paper);
+          r(10, 82, 314, 4, C.black); r(10, 150, 314, 4, C.black); r(10, 82, 4, 72, C.black); r(320, 82, 4, 72, C.black);
+          r(16, 88, 302, 60, C.pale);
+          r(18, 91, 298, 2, C.orange); r(18, 145, 298, 2, C.orange);
+          number(total, 31, 96, 11, 'rgba(143,53,21,0.35)');
+          number(total, 28, 93, 11, C.black);
+          t('VIEWS', 262, 129, 11, C.brown);
 
-          // count area
-          r(13, 166, 230, 19, 'rgba(255,224,160,0.55)');
-          r(13, 169, 232, 1, C.brown);
-          r(13, 172, 232, 1, C.brown);
-          r(13, 175, 232, 1, C.brown);
-          number(total, 16, 170, 6, C.black);
-          number(total, 17, 171, 6, 'rgba(143,53,21,0.28)');
-          number(total, 16, 170, 6, C.black);
-          t('VIEWS', 256, 176, 9, C.brown);
-
-          // tiny orange editorial town
-          r(48, 177, 12, 9, C.orange); r(49, 170, 10, 7, C.black); r(52, 168, 4, 3, C.pale); r(62, 182, 6, 6, C.black);
-          r(92, 170, 48, 11, C.darkOrange); r(95, 166, 12, 5, C.black); r(113, 173, 13, 5, C.pale); r(96, 181, 7, 7, C.black); r(130, 181, 7, 7, C.black);
-          r(174, 177, 12, 9, C.orange); r(175, 170, 10, 7, C.black); r(178, 168, 4, 3, C.pale);
-          r(212, 157, 16, 31, C.orange); r(215, 161, 3, 3, C.black); r(222, 161, 3, 3, C.black); r(215, 169, 3, 3, C.black); r(222, 169, 3, 3, C.black);
-          r(276, 176, 9, 12, C.black); r(278, 171, 5, 5, C.black); r(270, 179, 6, 5, C.pale);
+          // small branding below counter
+          t('くるひもタイムズ', W / 2, 158, 16, C.black, 'center', 'sans-serif');
+          r(30, 164, 5, 5, C.black); r(298, 162, 5, 5, C.black);
 
           // bottom status bar
-          r(0, H - 16, W, 16, C.orange);
-          r(0, H - 16, W, 2, C.black);
-          t(`ART ${articleCount} ${source} ${updated}`, 8, H - 12, 6, C.pale);
-          t(`${blink ? '■' : ' '} 5MIN REFRESH`, 239, H - 12, 6, C.pale);
+          r(0, H - 14, W, 14, C.orange); r(0, H - 14, W, 2, C.black);
+          t(`ART ${articleCount} ${source}`, 8, H - 10, 6, C.pale);
+          t(`${blink ? '■' : ' '} 5MIN REFRESH`, 235, H - 10, 6, C.pale);
         }
 
         async function fetchJson(urls) {
           let lastError;
           for (const url of urls) {
-            try {
-              const res = await fetch(url, { cache: 'no-store' });
-              if (!res.ok) throw new Error(`${res.status}`);
-              return { data: await res.json(), url };
-            } catch (e) {
-              lastError = e;
-            }
+            try { const res = await fetch(url, { cache: 'no-store' }); if (!res.ok) throw new Error(`${res.status}`); return { data: await res.json(), url }; }
+            catch (e) { lastError = e; }
           }
           throw lastError || new Error('fetch failed');
         }
-
         async function ids() {
           if (cachedIds.length) return cachedIds;
           try {
             const { data } = await fetchJson(DATA_URLS);
             const out = [];
-            ['ideas', 'lunches', 'quotes'].forEach((key) => {
-              if (Array.isArray(data[key])) data[key].forEach((item) => item && item.id && out.push(String(item.id)));
-            });
+            ['ideas', 'lunches', 'quotes'].forEach((key) => { if (Array.isArray(data[key])) data[key].forEach((item) => item && item.id && out.push(String(item.id))); });
             cachedIds = [...new Set(out)].filter(Boolean);
-          } catch (e) {
-            cachedIds = FALLBACK_IDS;
-          }
+          } catch (e) { cachedIds = FALLBACK_IDS; }
           return cachedIds.length ? cachedIds : FALLBACK_IDS;
         }
-
         async function update() {
           try {
-            note.textContent = 'くるひもタイムズの訪問回数を確認中...';
-            source = 'LOADING';
-            draw();
+            note.textContent = 'くるひもタイムズの訪問回数を確認中...'; source = 'LOADING'; draw();
             const articleIds = await ids();
             const qs = new URLSearchParams({ ids: articleIds.join(',') }).toString();
             const { data, url } = await fetchJson(API_URLS.map((api) => `${api}?${qs}`));
-            const next = articleIds.reduce((sum, id) => sum + Number((data.counts && data.counts[id]) || 0), 0);
-            total = next;
+            total = articleIds.reduce((sum, id) => sum + Number((data.counts && data.counts[id]) || 0), 0);
             articleCount = String(articleIds.length).padStart(2, '0');
             source = new URL(url).host.replace('www.', '').toUpperCase().slice(0, 10);
             updated = new Intl.DateTimeFormat('ja-JP', { hour: '2-digit', minute: '2-digit' }).format(new Date());
             note.textContent = `${articleIds.length}件の記事ビュー合計を表示中`;
             draw();
           } catch (e) {
-            source = 'RETRY';
-            updated = new Intl.DateTimeFormat('ja-JP', { hour: '2-digit', minute: '2-digit' }).format(new Date());
-            note.textContent = '訪問回数を取得できませんでした';
-            draw();
+            source = 'RETRY'; updated = new Intl.DateTimeFormat('ja-JP', { hour: '2-digit', minute: '2-digit' }).format(new Date()); note.textContent = '訪問回数を取得できませんでした'; draw();
           }
         }
-
-        draw();
-        update();
-        setInterval(() => { blink = !blink; draw(); }, 700);
-        setInterval(update, REFRESH_MS);
+        draw(); update(); setInterval(() => { blink = !blink; draw(); }, 700); setInterval(update, REFRESH_MS);
         document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
       })();
     </script>
