@@ -8,7 +8,7 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <title>くるひもタイムズ ゲームボーイ風カウンター</title>
-    <link rel="stylesheet" href="./styles.css?v=claude-roam-1" />
+    <link rel="stylesheet" href="./styles.css?v=single-critter-1" />
   </head>
   <body>
     <main class="gameboy-frame" aria-label="iPhone SE 横向き専用のくるひもタイムズ訪問回数カウンター">
@@ -27,7 +27,11 @@
         const DATA_URLS = ['https://kuruhimo.com/data.json', 'https://kuruhitimes.pages.dev/data.json', 'https://raw.githubusercontent.com/Nacchanman/kuruhitimes/main/data.json'];
         const FALLBACK_IDS = ['idea-5', 'idea-4', 'idea-3', 'idea-2', 'idea-1'];
         const REFRESH_MS = 5 * 60 * 1000;
-        const C = { black:'#1b1008', brown:'#542713', dark:'#8f3515', orange:'#d85a22', mid:'#ef8b3b', light:'#ffba5c', paper:'#ffe0a0', pale:'#fff0bf', cream:'#fff7d1', critter:'#cc805d', critter2:'#d58a67', gray:'#8e8e8e' };
+        const C = {
+          black: '#1b1008', brown: '#542713', dark: '#8f3515', orange: '#d85a22',
+          mid: '#ef8b3b', light: '#ffba5c', paper: '#ffe0a0', pale: '#fff0bf',
+          cream: '#fff7d1', critter: '#cc805d', gray: '#8e8e8e'
+        };
         const D = {
           '0':['111','101','101','101','101','101','111'], '1':['010','110','010','010','010','010','111'],
           '2':['111','001','001','111','100','100','111'], '3':['111','001','001','111','001','001','111'],
@@ -45,16 +49,36 @@
         let animFrame = 0;
         ctx.imageSmoothingEnabled = false;
 
-        function r(x, y, w, h, color) { ctx.fillStyle = color; ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h)); }
-        function t(str, x, y, size, color, align = 'left', font = 'monospace') { ctx.fillStyle = color; ctx.textAlign = align; ctx.textBaseline = 'top'; ctx.font = `${size}px ${font}`; ctx.fillText(str, Math.round(x), Math.round(y)); }
-        function digit(ch, x, y, s, color) { (D[ch] || D['-']).forEach((row, yy) => [...row].forEach((v, xx) => { if (v === '1') r(x + xx * s, y + yy * s, s, s, color); })); }
-        function number(n, x, y, s, color) { String(Math.max(0, Number(n) || 0)).padStart(6, '0').split('').forEach((ch, i) => digit(ch, x + i * s * 4, y, s, color)); }
-        function bird(x, y) { r(x, y + 2, 4, 2, C.brown); r(x + 4, y, 3, 2, C.brown); r(x + 7, y + 2, 4, 2, C.brown); }
-
-        function drawClaudeCritter(x, y, variant = 0, frame = 0) {
+        function r(x, y, w, h, color) {
+          ctx.fillStyle = color;
+          ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
+        }
+        function t(str, x, y, size, color, align = 'left', font = 'monospace') {
+          ctx.fillStyle = color;
+          ctx.textAlign = align;
+          ctx.textBaseline = 'top';
+          ctx.font = `${size}px ${font}`;
+          ctx.fillText(str, Math.round(x), Math.round(y));
+        }
+        function digit(ch, x, y, s, color) {
+          (D[ch] || D['-']).forEach((row, yy) => [...row].forEach((v, xx) => {
+            if (v === '1') r(x + xx * s, y + yy * s, s, s, color);
+          }));
+        }
+        function number(n, x, y, s, color) {
+          String(Math.max(0, Number(n) || 0)).padStart(6, '0').split('').forEach((ch, i) => {
+            digit(ch, x + i * s * 4, y, s, color);
+          });
+        }
+        function bird(x, y) {
+          r(x, y + 2, 4, 2, C.brown);
+          r(x + 4, y, 3, 2, C.brown);
+          r(x + 7, y + 2, 4, 2, C.brown);
+        }
+        function drawClaudeCritter(x, y, frame = 0) {
           const hop = frame % 2 === 0 ? 0 : -1;
           const legShift = frame % 4 < 2 ? 0 : 1;
-          const body = variant === 2 ? C.critter2 : C.critter;
+          const body = C.critter;
 
           r(x + 2, y + 1 + hop, 10, 1, body);
           r(x + 1, y + 2 + hop, 12, 1, body);
@@ -62,19 +86,20 @@
           r(x + 1, y + 6 + hop, 12, 2, body);
           r(x + 3, y + 3 + hop, 1, 1, C.black);
           r(x + 10, y + 3 + hop, 1, 1, C.black);
-          r(x + 3, y + 8 + hop + legShift, 1, 3, C.cream);
-          r(x + 6, y + 8 + hop, 1, 3, C.cream);
-          r(x + 9, y + 8 + hop + legShift, 1, 3, C.cream);
-          r(x + 11, y + 8 + hop, 1, 3, C.cream);
-          if (variant === 1) {
-            r(x + 12, y + 1 + hop, 2, 1, C.gray);
-            r(x + 13, y + hop, 1, 2, C.gray);
-          }
-        }
 
-        function pointOnPath(points, frame, offset = 0) {
-          const loop = 64;
-          const f = (frame + offset) % loop;
+          // four legs: same color as body
+          r(x + 3, y + 8 + hop + legShift, 1, 3, body);
+          r(x + 6, y + 8 + hop, 1, 3, body);
+          r(x + 9, y + 8 + hop + legShift, 1, 3, body);
+          r(x + 11, y + 8 + hop, 1, 3, body);
+
+          // tiny tail detail
+          r(x + 12, y + 1 + hop, 2, 1, C.gray);
+          r(x + 13, y + hop, 1, 2, C.gray);
+        }
+        function pointOnPath(points, frame) {
+          const loop = 96;
+          const f = frame % loop;
           const segmentCount = points.length - 1;
           const segmentLength = loop / segmentCount;
           const index = Math.min(segmentCount - 1, Math.floor(f / segmentLength));
@@ -86,19 +111,11 @@
             y: Math.round(a[1] + (b[1] - a[1]) * local)
           };
         }
-
-        function drawRoamingCritters() {
-          const pathA = [[18,65],[44,146],[112,157],[238,151],[303,111],[284,57],[170,38],[18,65]];
-          const pathB = [[292,65],[263,142],[195,160],[83,151],[29,104],[63,60],[184,43],[292,65]];
-          const pathC = [[154,35],[278,72],[300,135],[217,158],[114,154],[47,126],[47,70],[154,35]];
-          const a = pointOnPath(pathA, animFrame, 0);
-          const b = pointOnPath(pathB, animFrame, 21);
-          const c = pointOnPath(pathC, animFrame, 42);
-          drawClaudeCritter(a.x, a.y, 0, animFrame);
-          drawClaudeCritter(b.x, b.y, 1, animFrame + 1);
-          drawClaudeCritter(c.x, c.y, 2, animFrame + 2);
+        function drawRoamingCritter() {
+          const path = [[18,64],[69,141],[143,158],[254,148],[305,108],[284,58],[176,37],[62,54],[18,64]];
+          const p = pointOnPath(path, animFrame);
+          drawClaudeCritter(p.x, p.y, animFrame);
         }
-
         function draw() {
           ctx.clearRect(0, 0, W, H);
           r(0, 0, W, H, C.pale);
@@ -110,7 +127,8 @@
           r(104, 12, 126, 7, C.orange);
           r(95, 19, 144, 8, C.dark);
           r(0, 31, W, 2, C.brown);
-          bird(88, 10); bird(250, 8);
+          bird(88, 10);
+          bird(250, 8);
 
           for (let y = 40; y < H; y += 9) r(0, y, W, 1, 'rgba(84,39,19,0.10)');
           for (let x = 0; x < W; x += 9) r(x, 40, 1, H - 40, 'rgba(84,39,19,0.06)');
@@ -133,19 +151,23 @@
           t('VIEWS', 255, 105, 9, C.brown);
 
           t('くるひもタイムズ', W / 2, 147, 13, C.black, 'center', 'sans-serif');
-          drawRoamingCritters();
+          drawRoamingCritter();
 
           r(0, H - 13, W, 13, C.orange);
           r(0, H - 13, W, 2, C.black);
           t(`ART ${articleCount} ${source}`, 8, H - 9, 6, C.pale);
           t(`${blink ? '■' : ' '} 5MIN`, 277, H - 9, 6, C.pale);
         }
-
         async function fetchJson(urls) {
           let lastError;
           for (const url of urls) {
-            try { const res = await fetch(url, { cache: 'no-store' }); if (!res.ok) throw new Error(`${res.status}`); return { data: await res.json(), url }; }
-            catch (e) { lastError = e; }
+            try {
+              const res = await fetch(url, { cache: 'no-store' });
+              if (!res.ok) throw new Error(`${res.status}`);
+              return { data: await res.json(), url };
+            } catch (e) {
+              lastError = e;
+            }
           }
           throw lastError || new Error('fetch failed');
         }
@@ -154,14 +176,20 @@
           try {
             const { data } = await fetchJson(DATA_URLS);
             const out = [];
-            ['ideas', 'lunches', 'quotes'].forEach((key) => { if (Array.isArray(data[key])) data[key].forEach((item) => item && item.id && out.push(String(item.id))); });
+            ['ideas', 'lunches', 'quotes'].forEach((key) => {
+              if (Array.isArray(data[key])) data[key].forEach((item) => item && item.id && out.push(String(item.id)));
+            });
             cachedIds = [...new Set(out)].filter(Boolean);
-          } catch (e) { cachedIds = FALLBACK_IDS; }
+          } catch (e) {
+            cachedIds = FALLBACK_IDS;
+          }
           return cachedIds.length ? cachedIds : FALLBACK_IDS;
         }
         async function update() {
           try {
-            note.textContent = 'くるひもタイムズの訪問回数を確認中...'; source = 'LOADING'; draw();
+            note.textContent = 'くるひもタイムズの訪問回数を確認中...';
+            source = 'LOADING';
+            draw();
             const articleIds = await ids();
             const qs = new URLSearchParams({ ids: articleIds.join(',') }).toString();
             const { data, url } = await fetchJson(API_URLS.map((api) => `${api}?${qs}`));
@@ -172,11 +200,15 @@
             note.textContent = `${articleIds.length}件の記事ビュー合計を表示中`;
             draw();
           } catch (e) {
-            source = 'RETRY'; updated = new Intl.DateTimeFormat('ja-JP', { hour: '2-digit', minute: '2-digit' }).format(new Date()); note.textContent = '訪問回数を取得できませんでした'; draw();
+            source = 'RETRY';
+            updated = new Intl.DateTimeFormat('ja-JP', { hour: '2-digit', minute: '2-digit' }).format(new Date());
+            note.textContent = '訪問回数を取得できませんでした';
+            draw();
           }
         }
-        draw(); update();
-        setInterval(() => { blink = !blink; animFrame = (animFrame + 1) % 64; draw(); }, 900);
+        draw();
+        update();
+        setInterval(() => { blink = !blink; animFrame = (animFrame + 1) % 96; draw(); }, 900);
         setInterval(update, REFRESH_MS);
         document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
       })();
