@@ -3,50 +3,63 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-    <meta name="theme-color" content="#ffe7f1" />
-    <title>くるひもタイムズ 訪問者カウンター</title>
+    <meta name="theme-color" content="#f4ead9" />
+    <title>くるひもタイムズ ピクセル訪問カウンター</title>
     <link rel="stylesheet" href="./styles.css" />
   </head>
   <body>
-    <main class="phone-shell" aria-label="iPhone SE 横向きのくるひもタイムズ訪問者カウンター">
-      <section class="screen">
-        <div class="pixel-sky" aria-hidden="true">
-          <span class="cloud cloud-a"></span>
-          <span class="cloud cloud-b"></span>
-          <span class="star star-a">✦</span>
-          <span class="star star-b">✧</span>
+    <main class="pixel-device" aria-label="iPhone SE 横向きのくるひもタイムズ訪問者カウンター">
+      <section class="pixel-screen">
+        <div class="paper-noise" aria-hidden="true"></div>
+        <div class="pixel-sunset" aria-hidden="true">
+          <span class="sun-core"></span>
+          <span class="horizon horizon-a"></span>
+          <span class="horizon horizon-b"></span>
+          <span class="horizon horizon-c"></span>
+          <span class="bird bird-a"></span>
+          <span class="bird bird-b"></span>
+          <span class="bird bird-c"></span>
+          <span class="caption-line">SUNSET EDITORIAL ROOM</span>
         </div>
 
-        <section class="counter-card" aria-live="polite">
-          <p class="eyebrow">KURUHIMO TIMES</p>
-          <h1>くるひもタイムズ</h1>
-          <p class="caption">ただいまの訪問者さん</p>
+        <header class="pixel-rail" aria-hidden="true">
+          <span class="vol-badge">VOL013</span>
+          <span class="rail-date">2026.05.13 水</span>
+          <span class="rail-weather">晴れ・知的好奇心</span>
+          <span class="rail-est">EST.2026</span>
+        </header>
 
-          <div class="counter-display" role="status" aria-label="訪問者数">
+        <section class="counter-card" aria-live="polite">
+          <p class="pixel-kicker">THE KURUHIMO TIMES</p>
+          <h1 class="pixel-title" aria-label="くるひもタイムズ">
+            <span>く</span><span>る</span><span>ひ</span><span>も</span><span>タ</span><span>イ</span><span>ム</span><span>ズ</span>
+          </h1>
+          <p class="pixel-subtitle">ARTICLE VIEW COUNTER</p>
+
+          <div class="counter-display" role="status" aria-label="訪問回数">
             <span id="visitor-count">------</span>
-            <small>人目</small>
+            <small>VIEWS</small>
           </div>
 
-          <div class="characters" aria-hidden="true">
-            <div class="kuruhimo-friend friend-left">
-              <span class="face">•ᴗ•</span>
-              <span class="string"></span>
-            </div>
-            <div class="gate">
-              <span></span><span></span><span></span>
-            </div>
-            <div class="kuruhimo-friend friend-right">
-              <span class="face">•◡•</span>
-              <span class="string"></span>
-            </div>
+          <div class="pixel-editorial-room" aria-hidden="true">
+            <span class="pixel-character editor">
+              <span class="head"></span><span class="body"></span><span class="legs"></span>
+            </span>
+            <span class="pixel-desk">
+              <span class="lamp"></span><span class="paper-stack"></span><span class="typewriter"></span>
+            </span>
+            <span class="pixel-character reporter">
+              <span class="head"></span><span class="body"></span><span class="legs"></span>
+            </span>
           </div>
 
           <p id="counter-note" class="note">カウンターを読み込み中...</p>
         </section>
 
         <footer class="screen-footer">
-          <span>きょうも くるっと ひも日和</span>
-          <span class="blink">▮</span>
+          <span>PIXEL DAILY EDITION</span>
+          <span class="blink">█</span>
+          <span>5 MIN AUTO REFRESH</span>
         </footer>
       </section>
     </main>
