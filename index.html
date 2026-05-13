@@ -8,7 +8,7 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <title>くるひもタイムズ ゲームボーイ風カウンター</title>
-    <link rel="stylesheet" href="./styles.css?v=clean-counter-1" />
+    <link rel="stylesheet" href="./styles.css?v=fit-digits-1" />
   </head>
   <body>
     <main class="gameboy-frame" aria-label="iPhone SE 横向き専用のくるひもタイムズ訪問回数カウンター">
@@ -53,8 +53,6 @@
         function draw() {
           ctx.clearRect(0, 0, W, H);
           r(0, 0, W, H, C.pale);
-
-          // unobtrusive orange header
           r(0, 0, W, 36, C.mid);
           r(0, 36, W, 5, C.light);
           r(133, 0, 68, 6, C.light);
@@ -64,11 +62,9 @@
           r(0, 32, W, 2, C.brown);
           bird(86, 12); bird(248, 9);
 
-          // paper grid, intentionally subtle
           for (let y = 43; y < H; y += 9) r(0, y, W, 1, 'rgba(84,39,19,0.10)');
           for (let x = 0; x < W; x += 9) r(x, 43, 1, H - 43, 'rgba(84,39,19,0.06)');
 
-          // title bar: small, no overlap
           r(0, 42, W, 2, C.brown);
           r(0, 62, W, 2, C.brown);
           r(6, 47, 36, 10, C.black);
@@ -77,22 +73,19 @@
           t('TOTAL VIEWS', 199, 48, 8, C.brown);
           t(updated, 292, 48, 8, C.brown);
 
-          // main counter panel: dedicated clean space
           r(13, 72, 308, 84, C.black);
           r(18, 77, 298, 74, C.paper);
           r(22, 82, 290, 64, C.cream);
           r(25, 86, 284, 2, C.orange);
           r(25, 139, 284, 2, C.orange);
 
-          // huge counter, centered and never overlapped
-          number(total, 34, 92, 10, 'rgba(143,53,21,0.32)');
-          number(total, 31, 89, 10, C.black);
-          t('VIEWS', 255, 126, 10, C.brown);
+          // Digits are 3 columns x 7 rows. Scale 7 gives height 49px, safely inside y=86..139.
+          number(total, 55, 91, 7, 'rgba(143,53,21,0.32)');
+          number(total, 52, 88, 7, C.black);
+          t('VIEWS', 251, 117, 10, C.brown);
 
-          // small brand row below the counter
           t('くるひもタイムズ', W / 2, 160, 13, C.black, 'center', 'sans-serif');
 
-          // bottom status bar, separated from all content
           r(0, H - 13, W, 13, C.orange);
           r(0, H - 13, W, 2, C.black);
           t(`ART ${articleCount} ${source}`, 8, H - 9, 6, C.pale);
