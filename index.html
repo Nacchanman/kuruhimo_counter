@@ -8,7 +8,7 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <title>くるひもタイムズ ゲームボーイ風カウンター</title>
-    <link rel="stylesheet" href="./styles.css?v=counter-first-1" />
+    <link rel="stylesheet" href="./styles.css?v=clean-counter-1" />
   </head>
   <body>
     <main class="gameboy-frame" aria-label="iPhone SE 横向き専用のくるひもタイムズ訪問回数カウンター">
@@ -27,7 +27,7 @@
         const DATA_URLS = ['https://kuruhimo.com/data.json', 'https://kuruhitimes.pages.dev/data.json', 'https://raw.githubusercontent.com/Nacchanman/kuruhitimes/main/data.json'];
         const FALLBACK_IDS = ['idea-5', 'idea-4', 'idea-3', 'idea-2', 'idea-1'];
         const REFRESH_MS = 5 * 60 * 1000;
-        const C = { black:'#1b1008', brown:'#542713', dark:'#8f3515', orange:'#d85a22', mid:'#ef8b3b', light:'#ffba5c', paper:'#ffe0a0', pale:'#fff0bf' };
+        const C = { black:'#1b1008', brown:'#542713', dark:'#8f3515', orange:'#d85a22', mid:'#ef8b3b', light:'#ffba5c', paper:'#ffe0a0', pale:'#fff0bf', cream:'#fff7d1' };
         const D = {
           '0':['111','101','101','101','101','101','111'], '1':['010','110','010','010','010','010','111'],
           '2':['111','001','001','111','100','100','111'], '3':['111','001','001','111','001','001','111'],
@@ -53,39 +53,50 @@
         function draw() {
           ctx.clearRect(0, 0, W, H);
           r(0, 0, W, H, C.pale);
-          r(0, 0, W, 48, C.mid);
-          r(0, 48, W, 8, C.light);
-          for (let y = 0; y < H; y += 8) r(0, y, W, 1, 'rgba(84,39,19,0.14)');
-          for (let x = 0; x < W; x += 8) r(x, 0, 1, H, 'rgba(84,39,19,0.08)');
 
-          // compact sunset header
-          r(130, 0, 74, 7, C.light); r(116, 7, 102, 7, '#ffa84a'); r(104, 14, 126, 8, C.mid); r(96, 22, 142, 9, C.orange); r(106, 31, 122, 6, C.dark);
-          r(0, 35, W, 2, C.brown); r(0, 43, W, 1, C.orange); bird(92, 14); bird(244, 10); bird(262, 8);
-          t('KURUHIMO TIMES  /  ARTICLE VIEW COUNTER', W / 2, 39, 6, C.brown, 'center');
+          // unobtrusive orange header
+          r(0, 0, W, 36, C.mid);
+          r(0, 36, W, 5, C.light);
+          r(133, 0, 68, 6, C.light);
+          r(119, 6, 96, 6, '#ffa84a');
+          r(105, 12, 124, 7, C.orange);
+          r(96, 19, 142, 8, C.dark);
+          r(0, 32, W, 2, C.brown);
+          bird(86, 12); bird(248, 9);
 
-          // top strip
-          r(0, 56, W, 2, C.brown); r(0, 73, W, 2, C.brown);
-          r(5, 60, 35, 10, C.black); t('VOL013', 8, 62, 6, C.pale);
-          t('TOTAL ARTICLE VIEWS', 55, 61, 8, C.brown);
-          t(updated, 290, 61, 8, C.brown);
+          // paper grid, intentionally subtle
+          for (let y = 43; y < H; y += 9) r(0, y, W, 1, 'rgba(84,39,19,0.10)');
+          for (let x = 0; x < W; x += 9) r(x, 43, 1, H - 43, 'rgba(84,39,19,0.06)');
 
-          // main counter: the most prominent element
-          r(10, 82, 314, 72, C.paper);
-          r(10, 82, 314, 4, C.black); r(10, 150, 314, 4, C.black); r(10, 82, 4, 72, C.black); r(320, 82, 4, 72, C.black);
-          r(16, 88, 302, 60, C.pale);
-          r(18, 91, 298, 2, C.orange); r(18, 145, 298, 2, C.orange);
-          number(total, 31, 96, 11, 'rgba(143,53,21,0.35)');
-          number(total, 28, 93, 11, C.black);
-          t('VIEWS', 262, 129, 11, C.brown);
+          // title bar: small, no overlap
+          r(0, 42, W, 2, C.brown);
+          r(0, 62, W, 2, C.brown);
+          r(6, 47, 36, 10, C.black);
+          t('VOL013', 9, 49, 6, C.pale);
+          t('KURUHIMO TIMES', 55, 48, 8, C.brown);
+          t('TOTAL VIEWS', 199, 48, 8, C.brown);
+          t(updated, 292, 48, 8, C.brown);
 
-          // small branding below counter
-          t('くるひもタイムズ', W / 2, 158, 16, C.black, 'center', 'sans-serif');
-          r(30, 164, 5, 5, C.black); r(298, 162, 5, 5, C.black);
+          // main counter panel: dedicated clean space
+          r(13, 72, 308, 84, C.black);
+          r(18, 77, 298, 74, C.paper);
+          r(22, 82, 290, 64, C.cream);
+          r(25, 86, 284, 2, C.orange);
+          r(25, 139, 284, 2, C.orange);
 
-          // bottom status bar
-          r(0, H - 14, W, 14, C.orange); r(0, H - 14, W, 2, C.black);
-          t(`ART ${articleCount} ${source}`, 8, H - 10, 6, C.pale);
-          t(`${blink ? '■' : ' '} 5MIN REFRESH`, 235, H - 10, 6, C.pale);
+          // huge counter, centered and never overlapped
+          number(total, 34, 92, 10, 'rgba(143,53,21,0.32)');
+          number(total, 31, 89, 10, C.black);
+          t('VIEWS', 255, 126, 10, C.brown);
+
+          // small brand row below the counter
+          t('くるひもタイムズ', W / 2, 160, 13, C.black, 'center', 'sans-serif');
+
+          // bottom status bar, separated from all content
+          r(0, H - 13, W, 13, C.orange);
+          r(0, H - 13, W, 2, C.black);
+          t(`ART ${articleCount} ${source}`, 8, H - 9, 6, C.pale);
+          t(`${blink ? '■' : ' '} 5MIN`, 277, H - 9, 6, C.pale);
         }
 
         async function fetchJson(urls) {
