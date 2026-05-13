@@ -1,6 +1,13 @@
-const COUNTER_API_URL = "";
-const LOCAL_STORAGE_KEY = "kuruhimo-times-local-visitor-count";
-const BASE_LOCAL_COUNT = 4286;
+const KURUHI_COUNTER_API_URLS = [
+  "https://kuruhimo.com/api/article-counter",
+  "https://kuruhitimes.pages.dev/api/article-counter",
+];
+const KURUHI_DATA_URLS = [
+  "https://kuruhimo.com/data.json",
+  "https://kuruhitimes.pages.dev/data.json",
+  "https://raw.githubusercontent.com/Nacchanman/kuruhitimes/main/data.json",
+];
+const FALLBACK_ARTICLE_IDS = ["idea-5", "idea-4", "idea-3", "idea-2", "idea-1"];
 const REFRESH_INTERVAL_MS = 5 * 60 * 1000;
 
 const countElement = document.querySelector("#visitor-count");
@@ -10,6 +17,8 @@ let wakeLock = null;
 let refreshTimerId = null;
 let isUpdating = false;
 let lastDisplayedCount = 0;
+let cachedArticleIds = [];
+let lastSourceLabel = "くるひもタイムズ";
 
 const sleep = (milliseconds) => new Promise((resolve) => setTimeout(resolve, milliseconds));
 
@@ -33,6 +42,97 @@ function formatUpdatedAt(date = new Date()) {
   }).format(date);
 }
 
+function uniqueValues(values) {
+  return [...new Set(values.filter(Boolean))];
+}
+
+async function fetchJsonWithFallback(urls, buildOptions = () => ({})) {
+  let lastError = null;
+
+  for (const url of urls) {
+    try {
+      const response = await fetch(url, {
+        cache: "no-store",
+        ...buildOptions(url),
+      });
+
+      if (!response.ok) {
+        throw new Error(`${url} responded with ${response.status}`);
+      }
+
+      return {
+        data: await response.json(),
+        url,
+      };
+    } catch (error) {
+      lastError = error;
+      console.info("Failed to fetch:", url, error);
+    }
+  }
+
+  throw lastError || new Error("All fetch attempts failed.");
+}
+
+function normalizeArticleIds(payload) {
+  const ids = [];
+
+  for (const sectionName of ["ideas", "lunches", "quotes"]) {
+    if (!Array.isArray(payload?.[sectionName])) {
+      continue;
+    }
+
+    for (const item of payload[sectionName]) {
+      if (typeof item?.id === "string" && item.id.trim()) {
+        ids.push(item.id.trim());
+      }
+    }
+  }
+
+  return uniqueValues(ids);
+}
+
+async function fetchArticleIds() {
+  if (cachedArticleIds.length > 0) {
+    return cachedArticleIds;
+  }
+
+  try {
+    const { data, url } = await fetchJsonWithFallback(KURUHI_DATA_URLS);
+    const articleIds = normalizeArticleIds(data);
+
+    if (articleIds.length > 0) {
+      cachedArticleIds = articleIds;
+      lastSourceLabel = url.includes("githubusercontent") ? "GitHub上のdata.json" : "くるひもタイムズ";
+      return cachedArticleIds;
+    }
+  } catch (error) {
+    console.info("Could not load kuruhitimes data.json:", error);
+  }
+
+  cachedArticleIds = FALLBACK_ARTICLE_IDS;
+  lastSourceLabel = "フォールバックID";
+  return cachedArticleIds;
+}
+
+async function fetchKuruhiTotalViews() {
+  const ids = await fetchArticleIds();
+  const query = new URLSearchParams({ ids: ids.join(",") }).toString();
+  const apiUrls = KURUHI_COUNTER_API_URLS.map((url) => `${url}?${query}`);
+  const { data, url } = await fetchJsonWithFallback(apiUrls);
+
+  if (!data?.ok || typeof data.counts !== "object" || data.counts === null) {
+    throw new Error("Kuruhitimes counter API response is invalid.");
+  }
+
+  const total = ids.reduce((sum, id) => sum + Number(data.counts[id] || 0), 0);
+
+  return {
+    total,
+    articleCount: ids.length,
+    apiHost: new URL(url).host,
+  };
+}
+
 async function animateCount(targetCount) {
   const safeTarget = Math.max(0, Number(targetCount) || 0);
   const start = lastDisplayedCount > 0 ? lastDisplayedCount : Math.max(0, safeTarget - 24);
@@ -46,44 +146,6 @@ async function animateCount(targetCount) {
   }
 
   lastDisplayedCount = safeTarget;
-}
-
-function getLocalCount({ increment = true } = {}) {
-  const currentValue = Number(localStorage.getItem(LOCAL_STORAGE_KEY));
-  const currentCount = Number.isFinite(currentValue) && currentValue > 0
-    ? currentValue
-    : BASE_LOCAL_COUNT;
-  const nextValue = increment ? currentCount + 1 : currentCount;
-
-  localStorage.setItem(LOCAL_STORAGE_KEY, String(nextValue));
-  return nextValue;
-}
-
-async function fetchRemoteCount() {
-  if (!COUNTER_API_URL) {
-    return null;
-  }
-
-  const response = await fetch(COUNTER_API_URL, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-    },
-    body: JSON.stringify({ site: "kuruhimo-times" }),
-    cache: "no-store",
-  });
-
-  if (!response.ok) {
-    throw new Error(`Counter API responded with ${response.status}`);
-  }
-
-  const payload = await response.json();
-
-  if (typeof payload.count !== "number") {
-    throw new Error("Counter API response does not include a numeric count.");
-  }
-
-  return payload.count;
 }
 
 async function requestWakeLock() {
@@ -101,31 +163,22 @@ async function requestWakeLock() {
   }
 }
 
-async function updateCounter({ incrementLocal = false } = {}) {
+async function updateCounter() {
   if (!countElement || isUpdating) {
     return;
   }
 
   isUpdating = true;
-  setNote("カウンターを更新中...");
+  setNote("くるひもタイムズの訪問回数を確認中...");
 
   try {
-    const remoteCount = await fetchRemoteCount();
-
-    if (remoteCount === null) {
-      const localCount = getLocalCount({ increment: incrementLocal });
-      await animateCount(localCount);
-      setNote(`デモ表示中：5分ごとに更新します（${formatUpdatedAt()}更新）`);
-      return;
-    }
-
-    await animateCount(remoteCount);
-    setNote(`くるひもタイムズに来てくれてありがとう！ ${formatUpdatedAt()}更新`);
+    const { total, articleCount, apiHost } = await fetchKuruhiTotalViews();
+    await animateCount(total);
+    setNote(`${articleCount}件の記事ビュー合計を表示中｜${apiHost}｜${formatUpdatedAt()}更新`);
   } catch (error) {
     console.error(error);
-    const localCount = getLocalCount({ increment: incrementLocal });
-    await animateCount(localCount);
-    setNote(`APIにつながらなかったため、仮カウントを表示中（${formatUpdatedAt()}更新）`);
+    await animateCount(lastDisplayedCount);
+    setNote(`訪問回数を取得できませんでした。5分後に再試行します（${formatUpdatedAt()}）`);
   } finally {
     isUpdating = false;
   }
@@ -133,9 +186,7 @@ async function updateCounter({ incrementLocal = false } = {}) {
 
 function startAutoRefresh() {
   window.clearInterval(refreshTimerId);
-  refreshTimerId = window.setInterval(() => {
-    updateCounter({ incrementLocal: false });
-  }, REFRESH_INTERVAL_MS);
+  refreshTimerId = window.setInterval(updateCounter, REFRESH_INTERVAL_MS);
 }
 
 async function bootCounter() {
@@ -145,14 +196,14 @@ async function bootCounter() {
 
   countElement.textContent = "------";
   await requestWakeLock();
-  await updateCounter({ incrementLocal: true });
+  await updateCounter();
   startAutoRefresh();
 }
 
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState === "visible") {
     await requestWakeLock();
-    await updateCounter({ incrementLocal: false });
+    await updateCounter();
   }
 });
 
