@@ -8,7 +8,7 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <title>くるひもタイムズ ゲームボーイ風カウンター</title>
-    <link rel="stylesheet" href="./styles.css?v=article-count-note-1" />
+    <link rel="stylesheet" href="./styles.css?v=one-minute-refresh-1" />
   </head>
   <body>
     <main class="gameboy-frame" aria-label="iPhone SE 横向き専用のくるひもタイムズ訪問回数カウンター">
@@ -26,7 +26,7 @@
         const API_URLS = ['https://kuruhimo.com/api/article-counter', 'https://kuruhitimes.pages.dev/api/article-counter'];
         const DATA_URLS = ['https://kuruhimo.com/data.json', 'https://kuruhitimes.pages.dev/data.json', 'https://raw.githubusercontent.com/Nacchanman/kuruhitimes/main/data.json'];
         const FALLBACK_IDS = ['idea-5', 'idea-4', 'idea-3', 'idea-2', 'idea-1'];
-        const REFRESH_MS = 5 * 60 * 1000;
+        const REFRESH_MS = 60 * 1000;
         const C = {
           black: '#1b1008', brown: '#542713', dark: '#8f3515', orange: '#d85a22',
           mid: '#ef8b3b', light: '#ffba5c', paper: '#ffe0a0', pale: '#fff0bf',
@@ -157,7 +157,7 @@
           r(0, H - 13, W, 13, C.orange);
           r(0, H - 13, W, 2, C.black);
           t(`ART ${articleCount} ${source}`, 8, H - 9, 6, C.pale);
-          t(`${blink ? '■' : ' '} 5MIN ${updated}`, 232, H - 9, 6, C.pale);
+          t(`${blink ? '■' : ' '} 1MIN ${updated}`, 232, H - 9, 6, C.pale);
         }
         async function fetchJson(urls) {
           let lastError;
