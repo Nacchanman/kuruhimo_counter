@@ -8,7 +8,7 @@
     <meta http-equiv="pragma" content="no-cache" />
     <meta http-equiv="expires" content="0" />
     <title>くるひもタイムズ ゲームボーイ風カウンター</title>
-    <link rel="stylesheet" href="./styles.css?v=claude-play-1" />
+    <link rel="stylesheet" href="./styles.css?v=claude-roam-1" />
   </head>
   <body>
     <main class="gameboy-frame" aria-label="iPhone SE 横向き専用のくるひもタイムズ訪問回数カウンター">
@@ -72,6 +72,33 @@
           }
         }
 
+        function pointOnPath(points, frame, offset = 0) {
+          const loop = 64;
+          const f = (frame + offset) % loop;
+          const segmentCount = points.length - 1;
+          const segmentLength = loop / segmentCount;
+          const index = Math.min(segmentCount - 1, Math.floor(f / segmentLength));
+          const local = (f - index * segmentLength) / segmentLength;
+          const a = points[index];
+          const b = points[index + 1];
+          return {
+            x: Math.round(a[0] + (b[0] - a[0]) * local),
+            y: Math.round(a[1] + (b[1] - a[1]) * local)
+          };
+        }
+
+        function drawRoamingCritters() {
+          const pathA = [[18,65],[44,146],[112,157],[238,151],[303,111],[284,57],[170,38],[18,65]];
+          const pathB = [[292,65],[263,142],[195,160],[83,151],[29,104],[63,60],[184,43],[292,65]];
+          const pathC = [[154,35],[278,72],[300,135],[217,158],[114,154],[47,126],[47,70],[154,35]];
+          const a = pointOnPath(pathA, animFrame, 0);
+          const b = pointOnPath(pathB, animFrame, 21);
+          const c = pointOnPath(pathC, animFrame, 42);
+          drawClaudeCritter(a.x, a.y, 0, animFrame);
+          drawClaudeCritter(b.x, b.y, 1, animFrame + 1);
+          drawClaudeCritter(c.x, c.y, 2, animFrame + 2);
+        }
+
         function draw() {
           ctx.clearRect(0, 0, W, H);
           r(0, 0, W, H, C.pale);
@@ -106,17 +133,7 @@
           t('VIEWS', 255, 105, 9, C.brown);
 
           t('くるひもタイムズ', W / 2, 147, 13, C.black, 'center', 'sans-serif');
-
-          const phase = animFrame % 8;
-          const leftPathX = [58, 60, 62, 60, 58, 57, 59, 60];
-          const leftPathY = [146, 145, 144, 145, 146, 147, 146, 145];
-          const centerPathX = [155, 157, 159, 157, 155, 154, 156, 157];
-          const centerPathY = [136, 135, 134, 135, 136, 137, 136, 135];
-          const rightPathX = [254, 252, 250, 252, 254, 256, 254, 252];
-          const rightPathY = [145, 146, 147, 146, 145, 144, 145, 146];
-          drawClaudeCritter(leftPathX[phase], leftPathY[phase], 0, phase);
-          drawClaudeCritter(centerPathX[phase], centerPathY[phase], 1, phase);
-          drawClaudeCritter(rightPathX[phase], rightPathY[phase], 2, phase);
+          drawRoamingCritters();
 
           r(0, H - 13, W, 13, C.orange);
           r(0, H - 13, W, 2, C.black);
@@ -159,7 +176,7 @@
           }
         }
         draw(); update();
-        setInterval(() => { blink = !blink; animFrame = (animFrame + 1) % 8; draw(); }, 500);
+        setInterval(() => { blink = !blink; animFrame = (animFrame + 1) % 64; draw(); }, 900);
         setInterval(update, REFRESH_MS);
         document.addEventListener('visibilitychange', () => { if (!document.hidden) update(); });
       })();
