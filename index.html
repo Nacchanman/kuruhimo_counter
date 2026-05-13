@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#ffe7f1" />
+    <title>くるひもタイムズ 訪問者カウンター</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="phone-shell" aria-label="iPhone SE 横向きのくるひもタイムズ訪問者カウンター">
+      <section class="screen">
+        <div class="pixel-sky" aria-hidden="true">
+          <span class="cloud cloud-a"></span>
+          <span class="cloud cloud-b"></span>
+          <span class="star star-a">✦</span>
+          <span class="star star-b">✧</span>
+        </div>
+
+        <section class="counter-card" aria-live="polite">
+          <p class="eyebrow">KURUHIMO TIMES</p>
+          <h1>くるひもタイムズ</h1>
+          <p class="caption">ただいまの訪問者さん</p>
+
+          <div class="counter-display" role="status" aria-label="訪問者数">
+            <span id="visitor-count">------</span>
+            <small>人目</small>
+          </div>
+
+          <div class="characters" aria-hidden="true">
+            <div class="kuruhimo-friend friend-left">
+              <span class="face">•ᴗ•</span>
+              <span class="string"></span>
+            </div>
+            <div class="gate">
+              <span></span><span></span><span></span>
+            </div>
+            <div class="kuruhimo-friend friend-right">
+              <span class="face">•◡•</span>
+              <span class="string"></span>
+            </div>
+          </div>
+
+          <p id="counter-note" class="note">カウンターを読み込み中...</p>
+        </section>
+
+        <footer class="screen-footer">
+          <span>きょうも くるっと ひも日和</span>
+          <span class="blink">▮</span>
+        </footer>
+      </section>
+    </main>
+
+    <script src="./app.js" defer></script>
+  </body>
+</html>
