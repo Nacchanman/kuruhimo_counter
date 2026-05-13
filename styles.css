@@ -13,16 +13,17 @@ body {
   display: grid;
   place-items: center;
   overflow: hidden;
-  background: #1c2117;
+  padding: 12px;
+  background: #172016;
 }
 
 .gameboy-frame {
-  width: min(100vw, calc(100vh * 667 / 375));
-  height: min(100vh, calc(100vw * 375 / 667));
+  width: min(94vw, calc((100vh - 24px) * 667 / 375));
+  height: min(calc(100vh - 24px), calc(94vw * 375 / 667));
   max-width: 667px;
   max-height: 375px;
   position: relative;
-  padding: min(2.2vw, 14px) min(6.1vw, 41px);
+  padding: 10px 34px;
   background: #372415;
   box-shadow:
     0 0 0 4px #0a0806,
@@ -40,16 +41,18 @@ body {
 }
 
 .gameboy-frame::before {
-  left: 13px;
+  left: 12px;
   width: 14px;
-  height: 56px;
-  box-shadow: 0 -76px 0 #0a0806, 0 76px 0 #0a0806;
+  height: 52px;
+  box-shadow:
+    0 -72px 0 #0a0806,
+    0 72px 0 #0a0806;
 }
 
 .gameboy-frame::after {
-  right: 13px;
-  width: 28px;
-  height: 28px;
+  right: 12px;
+  width: 26px;
+  height: 26px;
   box-shadow:
     0 0 0 4px #9b6a39,
     0 0 0 8px #0a0806;
